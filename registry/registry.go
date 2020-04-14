@@ -17,7 +17,7 @@ func NewInsecureRegistryApi(registryUrl string, auth ...string)*registryApi {
 	return &registryApi{registryUrl: registryUrl, client: newInsecureHttpClient()}
 }
 
-func NewTlsRegistryApi(registryUrl ,ca_pem string, auth ...string)*registryApi {
+func NewTlsRegistryApi(registryUrl ,ca_pem string)*registryApi {
 	return &registryApi{client: newTlsHttpClient(ca_pem), registryUrl: registryUrl}
 }
 

@@ -8,6 +8,7 @@ import (
 
 func main() {
 	client := registry.NewInsecureRegistryApi("http://10.23.6.90:5000")
+	client.SetBasicAuth("username", "password")
 	// list all repo
 	if repo,err := client.RepositoriesList();err != nil{
 		fmt.Printf("List repo err: %s", err.Error())
