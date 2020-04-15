@@ -1,8 +1,10 @@
 package registry
 
-import "net/http"
+import (
+	"net/http"
+)
 
-func(registry *registryApi)TagsList(image string)([]string,error){
+func(registry *RegistryApi)TagsList(image string)([]string,error){
 	request,err := registry.buildRegistryApiRequest("GET", registry.buildRegistryApiUrl(image, "tags", "list"), nil, nil)
 	if err != nil {
 		return nil, err

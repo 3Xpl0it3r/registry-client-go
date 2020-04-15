@@ -7,27 +7,27 @@ import (
 	"net/http"
 )
 
-type registryApi struct {
+type RegistryApi struct {
 	registryUrl string
 	client *http.Client
 	username, password string
 }
 
-func NewInsecureRegistryApi(registryUrl string, auth ...string)*registryApi {
-	return &registryApi{registryUrl: registryUrl, client: newInsecureHttpClient()}
+func NewInsecureRegistryApi(registryUrl string)*RegistryApi {
+	return &RegistryApi{registryUrl: registryUrl, client: newInsecureHttpClient()}
 }
 
-func NewTlsRegistryApi(registryUrl ,ca_pem string)*registryApi {
-	return &registryApi{client: newTlsHttpClient(ca_pem), registryUrl: registryUrl}
+func NewTlsRegistryApi(registryUrl ,ca_pem string)*RegistryApi {
+	return &RegistryApi{client: newTlsHttpClient(ca_pem), registryUrl: registryUrl}
 }
 
-func(registry *registryApi)SetBasicAuth(username,password string){
+func(registry *RegistryApi)SetBasicAuth(username,password string){
 	registry.username = username
 	registry.password = password
 }
 
 // buildRegistryApiUrl  build a special url by given segments in urls
-func(registry *registryApi)buildRegistryApiUrl(segments ...string)string{
+func(registry *RegistryApi)buildRegistryApiUrl(segments ...string)string{
 	url := registry.registryUrl + "/v2"
 
 	if segments!= nil{
@@ -43,7 +43,7 @@ func(registry *registryApi)buildRegistryApiUrl(segments ...string)string{
 
 // buildRegistryApiRequest build a special request by given special method, url, header, and payload
 // return a standard http.Request pointer
-func(registry *registryApi)buildRegistryApiRequest(method,url string, headers map[string]string, body io.Reader)(*http.Request,error){
+func(registry *RegistryApi)buildRegistryApiRequest(method,url string, headers map[string]string, body io.Reader)(*http.Request,error){
 	request,err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, fmt.Errorf("Build Request Faile: %s\n",err.Error())
@@ -61,7 +61,7 @@ func(registry *registryApi)buildRegistryApiRequest(method,url string, headers ma
 
 
 // disputed
-func(registry *registryApi)parseRegistryApiResponse_v1(response *http.Response, expectHttpStatus int, object interface{})*rdRegistryCustomResponse {
+func(registry *RegistryApi)parseRegistryApiResponse_v1(response *http.Response, expectHttpStatus int, object interface{})*rdRegistryCustomResponse {
 	defer response.Body.Close()
 	raw,_ := ioutil.ReadAll(response.Body)
 	if response.StatusCode == expectHttpStatus{
@@ -93,7 +93,7 @@ func(registry *registryApi)parseRegistryApiResponse_v1(response *http.Response, 
 
 // simpleParseRegistryApiResponse parse response object ,but ignore the registry special error types
 // unmarshal response.body to object, return error or nil
-func(registry *registryApi)simpleParseRegistryApiResponse(response *http.Response, expectHttpStatus int, object interface{})error{
+func(registry *RegistryApi)simpleParseRegistryApiResponse(response *http.Response, expectHttpStatus int, object interface{})error{
 	defer response.Body.Close()
 	raw,_ := ioutil.ReadAll(response.Body)
 	if response.StatusCode == expectHttpStatus{

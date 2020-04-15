@@ -5,7 +5,7 @@ import (
 )
 
 // repositoriesList list all repositories in registry server
-func(registry *registryApi)RepositoriesList()([]string,error){
+func(registry *RegistryApi)RepositoriesList()([]string,error){
 	req,err := registry.buildRegistryApiRequest("GET", registry.buildRegistryApiUrl("_catalog"), nil, nil)
 	if err != nil {
 		return nil, err
