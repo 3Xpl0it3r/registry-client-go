@@ -100,13 +100,13 @@ func(registry *RegistryApi)simpleParseRegistryApiResponse(response *http.Respons
 		if object != nil{
 			return rdHandler(raw, object)
 		} else {
-			return nil
+			return fmt.Errorf("Meethod:\t%s\tUrl:\t%s\tGot:%s\n", response.Request.Method, response.Request.URL.String(), string(raw))
 		}
+	} else if response.StatusCode == http.StatusNotFound{
+		return fmt.Errorf("Method:\t%s\nUrl:\t%s\nStatusCode:\t%d\n", response.Request.Method, response.Request.URL.String(), response.StatusCode)
 	} else {
-		return fmt.Errorf("Method:%s\tUrl:%s\tRaw:%s\t", response.Request.Method, response.Request.URL.String())
+		return fmt.Errorf("Method:%s\tUrl:%s\tStatusCode:\t%d\tRaw:%s\t", response.Request.Method, response.StatusCode,response.Request.URL.String())
 	}
-
-
 }
 
 

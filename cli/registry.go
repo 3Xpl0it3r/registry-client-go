@@ -1,13 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"io"
 	"l0calh0st.cn/docker-registry/cli/cmd"
 
 	"os"
-
 )
 
 var (
@@ -34,11 +32,6 @@ func main() {
 func NewCommand(in io.Reader, out io.Writer, err io.Writer)*cobra.Command{
 	rootCmd = &cobra.Command{
 		Use: "registry",
-		Short: "Registry is a docker registry v2 client cli",
-		Long: ``,
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println(cmd.PersistentFlags().GetString("url"))
-		},
 	}
 	// add image sub_command
 	rootCmd.AddCommand(cmd.NewImageCommand())
@@ -46,6 +39,8 @@ func NewCommand(in io.Reader, out io.Writer, err io.Writer)*cobra.Command{
 	rootCmd.AddCommand(cmd.NewDigestCommand())
 	//
 	rootCmd.AddCommand(cmd.NewTagCommand())
+	rootCmd.SetHelpFunc(rootCmd.HelpFunc())
+
 	return rootCmd
 }
 

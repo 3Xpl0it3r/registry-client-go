@@ -10,22 +10,31 @@ import (
 func NewDigestCommand()*cobra.Command{
 	digetdCmd := &cobra.Command{
 		Use: "digest",
-		Short: "show digest",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return preCheckAndInitRegistryClient(cmd)
+		PreRun: func(cmd *cobra.Command, args []string)  {
+			err :=  preCheckAndInitRegistryClient(cmd)
+			if err != nil{
+				fmt.Fprintf(os.Stderr, "%s",err)
+			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		Run: func(cmd *cobra.Command, args []string)  {
 			if len(args) != 1{
-				return fmt.Errorf("Arguments image:tag must be supplied")
+				fmt.Fprintf(os.Stderr, "image:reference must be supplied\n")
+				return
 			}
 			imageInfo := strings.Split(args[0], ":")
+			if len(imageInfo)!= 2 {
+				fmt.Fprintf(os.Stderr, "Argument must be as imagename:reference\n")
+				return
+			}
 			diget,err := registryClient.Digest(imageInfo[0], imageInfo[1])
 			if err != nil{
-				return err
+				fmt.Fprintf(os.Stderr, "%s",err.Error())
+				return
 			}
 			fmt.Fprintln(os.Stdout, diget)
-			return nil
+			return
 		},
 	}
+	digetdCmd.SetHelpFunc(digetdCmd.HelpFunc())
 	return digetdCmd
 }

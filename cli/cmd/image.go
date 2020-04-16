@@ -10,13 +10,10 @@ import (
 func NewImageCommand()*cobra.Command{
 	rootImg := &cobra.Command{
 		Use: "image",
-		Short: "image operations",
-		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Help()
-		},
 	}
 	rootImg.AddCommand(newImageListCommand())
 	rootImg.AddCommand(newImageDelCommand())
+	rootImg.SetHelpFunc(rootImg.HelpFunc())
 	return rootImg
 }
 
@@ -24,44 +21,49 @@ func NewImageCommand()*cobra.Command{
 func newImageListCommand()*cobra.Command{
 	listCmd := &cobra.Command{
 		Use: "list",
-		Short: "l",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return preCheckAndInitRegistryClient(cmd)
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		Run: func(cmd *cobra.Command, args []string)  {
 			image,err := registryClient.RepositoriesList()
 			if err != nil {
-				return err
+				fmt.Fprintf(os.Stdout, "[!]Failed: %s\n",err.Error())
 			}
-			fmt.Fprintln(os.Stdout, strings.Join(image, ","))
-			return nil
+			for _,img := range image{
+				fmt.Println(img)
+			}
+			return
 		},
 	}
+	listCmd.SetHelpFunc(listCmd.HelpFunc())
 	return listCmd
 }
 
 func newImageDelCommand()*cobra.Command{
-
 	delCmd := &cobra.Command{
 		Use: "rm",
-		Short: "delete a image",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return preCheckAndInitRegistryClient(cmd)
+		PreRun: func(cmd *cobra.Command, args []string)  {
+			err := preCheckAndInitRegistryClient(cmd)
+			if err != nil{
+				fmt.Fprintf(os.Stderr, "[!]Failed: %s\n",err.Error())
+				return
+			}
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		Run: func(cmd *cobra.Command, args []string)  {
 			nameInfo := strings.Split(args[0], ":")
 			reference,err := registryClient.Digest(nameInfo[0], nameInfo[1])
 			if err != nil{
-				return err
+				return
 			}
 			err = registryClient.ImageDelete(nameInfo[0], reference)
 			if err != nil{
-				return err
+				return
 			}else {
 				fmt.Fprintf(os.Stdout, "Delete %s:%s Succfully!", nameInfo[0],nameInfo[1])
 			}
-			return nil
+			return
 		},
 	}
+	delCmd.SetHelpFunc(delCmd.HelpFunc())
 	return delCmd
 }

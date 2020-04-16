@@ -1,6 +1,10 @@
 # registry-client-go
 a client api for docker registry
 
+
+
+
+
 ## Usage
 ```go
 import "l0calh0st.cn/docker-registry/registry"
@@ -15,6 +19,7 @@ clientTls := registry.NewTlsRegistryApi("10.23.6.90:5000", "/root/cert/ca.pem")
 // if need some basic,
 client.SetBasicAuth("username", "password")
 ```
+
 
 ## list all repo
 ```go
